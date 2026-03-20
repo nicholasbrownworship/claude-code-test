@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Project Dashboard</title>
+  <title>Nicholas Brown — Projects</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -18,6 +18,7 @@
       --yellow: #d29922;
       --red: #f85149;
       --purple: #bc8cff;
+      --orange: #f0883e;
       --radius: 8px;
     }
 
@@ -29,28 +30,29 @@
       min-height: 100vh;
     }
 
-    /* ── Layout ── */
     .shell { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
 
-    /* ── Sidebar ── */
+    /* Sidebar */
     .sidebar {
       background: var(--surface);
       border-right: 1px solid var(--border);
       padding: 24px 0;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 2px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
     }
     .sidebar-logo {
       padding: 0 20px 20px;
       font-size: 18px;
       font-weight: 700;
-      color: var(--accent);
-      letter-spacing: -0.5px;
+      color: var(--text);
       border-bottom: 1px solid var(--border);
       margin-bottom: 8px;
     }
-    .sidebar-logo span { color: var(--muted); font-weight: 400; }
+    .sidebar-logo span { color: var(--muted); font-weight: 400; font-size: 13px; display: block; margin-top: 2px; }
     .nav-item {
       display: flex;
       align-items: center;
@@ -58,14 +60,14 @@
       padding: 8px 20px;
       color: var(--muted);
       cursor: pointer;
-      border-radius: 0;
-      transition: background 0.15s, color 0.15s;
       border-left: 3px solid transparent;
+      transition: all 0.1s;
+      text-decoration: none;
       user-select: none;
     }
-    .nav-item:hover { background: rgba(88,166,255,0.06); color: var(--text); }
+    .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
     .nav-item.active { color: var(--accent); border-left-color: var(--accent); background: rgba(88,166,255,0.08); }
-    .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+    .nav-icon { font-size: 15px; width: 20px; text-align: center; }
     .sidebar-section {
       padding: 16px 20px 4px;
       font-size: 11px;
@@ -74,19 +76,43 @@
       color: var(--muted);
       margin-top: 8px;
     }
+    .sidebar-count {
+      margin-left: auto;
+      background: var(--border);
+      color: var(--muted);
+      font-size: 11px;
+      padding: 1px 7px;
+      border-radius: 20px;
+    }
 
-    /* ── Main ── */
+    /* Main */
     .main { padding: 32px; overflow-y: auto; }
     .topbar {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       margin-bottom: 28px;
+      gap: 16px;
     }
-    .topbar h1 { font-size: 22px; font-weight: 600; }
-    .date { color: var(--muted); font-size: 13px; }
+    .topbar h1 { font-size: 24px; font-weight: 700; }
+    .topbar p { color: var(--muted); font-size: 13px; margin-top: 4px; }
+    .gh-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 14px;
+      color: var(--text);
+      font-size: 13px;
+      text-decoration: none;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .gh-link:hover { border-color: var(--accent); color: var(--accent); }
 
-    /* ── Stats row ── */
+    /* Stats */
     .stats {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -97,168 +123,127 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 20px;
+      padding: 18px 20px;
     }
     .stat-label { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
     .stat-value { font-size: 28px; font-weight: 700; line-height: 1; }
     .stat-sub { color: var(--muted); font-size: 12px; margin-top: 6px; }
-    .stat-sub .up { color: var(--green); }
-    .stat-sub .down { color: var(--red); }
 
-    /* ── Grid ── */
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-    .grid-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+    /* Section header */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      margin-top: 28px;
+    }
+    .section-header:first-of-type { margin-top: 0; }
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title .tag {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: var(--border);
+      color: var(--muted);
+    }
 
-    /* ── Card ── */
-    .card {
+    /* Project grid */
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 14px;
+      margin-bottom: 8px;
+    }
+    .project-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      overflow: hidden;
+      padding: 16px 18px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
-    .card-header {
+    .project-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(88,166,255,0.1);
+    }
+    .project-card-top {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
+      gap: 10px;
     }
-    .card-title { font-weight: 600; font-size: 14px; }
-    .card-action { color: var(--accent); font-size: 12px; cursor: pointer; }
-    .card-action:hover { text-decoration: underline; }
-
-    /* ── Projects list ── */
-    .project-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 20px;
-      border-bottom: 1px solid var(--border);
-      transition: background 0.1s;
-      cursor: pointer;
-    }
-    .project-item:last-child { border-bottom: none; }
-    .project-item:hover { background: rgba(255,255,255,0.03); }
-    .project-info { display: flex; align-items: center; gap: 12px; }
-    .project-icon {
-      width: 36px; height: 36px;
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px;
+    .project-emoji {
+      font-size: 22px;
+      line-height: 1;
       flex-shrink: 0;
     }
-    .project-name { font-weight: 600; font-size: 13px; }
-    .project-desc { color: var(--muted); font-size: 12px; margin-top: 2px; }
-    .project-meta { display: flex; align-items: center; gap: 12px; }
+    .project-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--accent);
+    }
+    .project-name:hover { text-decoration: underline; }
+    .project-desc {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+      flex: 1;
+    }
+    .project-foot {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .lang-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .lang-label { font-size: 12px; color: var(--muted); }
+    .updated { font-size: 12px; color: var(--muted); margin-left: auto; }
+
+    /* Lang colors */
+    .lang-html { background: #e34c26; }
+    .lang-js   { background: #f1e05a; }
+    .lang-css  { background: #563d7c; }
+    .lang-none { background: var(--border); }
+
+    /* Badge */
     .badge {
       font-size: 11px;
       padding: 2px 8px;
       border-radius: 20px;
       font-weight: 500;
     }
-    .badge-green { background: rgba(63,185,80,0.15); color: var(--green); }
+    .badge-green  { background: rgba(63,185,80,0.15);  color: var(--green); }
     .badge-yellow { background: rgba(210,153,34,0.15); color: var(--yellow); }
-    .badge-red { background: rgba(248,81,73,0.15); color: var(--red); }
-    .badge-blue { background: rgba(88,166,255,0.15); color: var(--accent); }
-    .badge-purple { background: rgba(188,140,255,0.15); color: var(--purple); }
+    .badge-blue   { background: rgba(88,166,255,0.15); color: var(--accent); }
+    .badge-purple { background: rgba(188,140,255,0.15);color: var(--purple); }
+    .badge-orange { background: rgba(240,136,62,0.15); color: var(--orange); }
 
-    /* ── Activity feed ── */
-    .activity-item {
-      display: flex;
-      gap: 12px;
-      padding: 12px 20px;
-      border-bottom: 1px solid var(--border);
-    }
-    .activity-item:last-child { border-bottom: none; }
-    .activity-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      margin-top: 5px;
-      flex-shrink: 0;
-    }
-    .activity-text { font-size: 13px; line-height: 1.5; }
-    .activity-text strong { color: var(--text); }
-    .activity-time { color: var(--muted); font-size: 11px; margin-top: 3px; }
-
-    /* ── Tasks ── */
-    .task-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 10px 20px;
-      border-bottom: 1px solid var(--border);
-      cursor: pointer;
-    }
-    .task-item:last-child { border-bottom: none; }
-    .task-item:hover { background: rgba(255,255,255,0.03); }
-    .task-check {
-      width: 16px; height: 16px;
-      border: 1.5px solid var(--border);
-      border-radius: 4px;
-      margin-top: 1px;
-      flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 10px;
-      transition: all 0.15s;
-    }
-    .task-item.done .task-check { background: var(--green); border-color: var(--green); color: #fff; }
-    .task-item.done .task-label { text-decoration: line-through; color: var(--muted); }
-    .task-label { font-size: 13px; flex: 1; }
-    .task-tag { font-size: 11px; color: var(--muted); }
-
-    /* ── Mini chart ── */
-    .chart-wrap { padding: 16px 20px 20px; }
-    .bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 80px; }
-    .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .bar {
-      width: 100%;
-      border-radius: 3px 3px 0 0;
-      background: rgba(88,166,255,0.3);
-      transition: background 0.15s;
-      cursor: pointer;
-      position: relative;
-    }
-    .bar:hover { background: var(--accent); }
-    .bar.today { background: rgba(88,166,255,0.6); }
-    .bar-label { font-size: 10px; color: var(--muted); }
-
-    /* ── Responsive ── */
+    /* Responsive */
     @media (max-width: 900px) {
       .shell { grid-template-columns: 1fr; }
       .sidebar { display: none; }
       .stats { grid-template-columns: repeat(2,1fr); }
-      .grid-2, .grid-3 { grid-template-columns: 1fr; }
     }
-
-    /* ── Add Task ── */
-    .add-task-form {
-      display: flex;
-      gap: 8px;
-      padding: 12px 20px;
-      border-top: 1px solid var(--border);
+    @media (max-width: 600px) {
+      .main { padding: 16px; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .project-grid { grid-template-columns: 1fr; }
     }
-    .add-task-input {
-      flex: 1;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--text);
-      font-size: 13px;
-      padding: 6px 10px;
-      outline: none;
-    }
-    .add-task-input:focus { border-color: var(--accent); }
-    .add-task-btn {
-      background: var(--accent);
-      color: #0d1117;
-      border: none;
-      border-radius: 6px;
-      padding: 6px 12px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .add-task-btn:hover { opacity: 0.85; }
   </style>
 </head>
 <body>
@@ -266,330 +251,377 @@
 
   <!-- Sidebar -->
   <nav class="sidebar">
-    <div class="sidebar-logo">dev<span>board</span></div>
-
-    <div class="nav-item active" onclick="setActive(this)">
-      <span class="nav-icon">▦</span> Overview
-    </div>
-    <div class="nav-item" onclick="setActive(this)">
-      <span class="nav-icon">⬡</span> Projects
-    </div>
-    <div class="nav-item" onclick="setActive(this)">
-      <span class="nav-icon">✓</span> Tasks
-    </div>
-    <div class="nav-item" onclick="setActive(this)">
-      <span class="nav-icon">⌁</span> Activity
+    <div class="sidebar-logo">
+      nicholasbrownworship
+      <span>Project Dashboard</span>
     </div>
 
-    <div class="sidebar-section">Tools</div>
-    <div class="nav-item" onclick="setActive(this)">
-      <span class="nav-icon">⊞</span> GitHub
-    </div>
-    <div class="nav-item" onclick="setActive(this)">
-      <span class="nav-icon">◈</span> Claude AI
-    </div>
-    <div class="nav-item" onclick="setActive(this)">
-      <span class="nav-icon">⚙</span> Settings
-    </div>
+    <a class="nav-item active" href="#all">
+      <span class="nav-icon">▦</span> All Projects
+      <span class="sidebar-count">20</span>
+    </a>
+    <a class="nav-item" href="#warhammer">
+      <span class="nav-icon">⚔</span> Warhammer 40k
+      <span class="sidebar-count">5</span>
+    </a>
+    <a class="nav-item" href="#middle-earth">
+      <span class="nav-icon">🗺</span> Middle Earth
+      <span class="sidebar-count">4</span>
+    </a>
+    <a class="nav-item" href="#games">
+      <span class="nav-icon">🎲</span> Other Games
+      <span class="sidebar-count">3</span>
+    </a>
+    <a class="nav-item" href="#tools">
+      <span class="nav-icon">🛠</span> Tools & Tests
+      <span class="sidebar-count">8</span>
+    </a>
+
+    <div class="sidebar-section">Links</div>
+    <a class="nav-item" href="https://github.com/nicholasbrownworship" target="_blank">
+      <span class="nav-icon">⊞</span> GitHub Profile
+    </a>
   </nav>
 
   <!-- Main -->
   <main class="main">
     <div class="topbar">
-      <h1>Good morning 👋</h1>
-      <div class="date" id="date-display"></div>
+      <div>
+        <h1>My Projects</h1>
+        <p>nicholasbrownworship · GitHub · 20 repositories</p>
+      </div>
+      <a class="gh-link" href="https://github.com/nicholasbrownworship" target="_blank">
+        ⊞ View on GitHub
+      </a>
     </div>
 
     <!-- Stats -->
     <div class="stats">
       <div class="stat-card">
-        <div class="stat-label">Active Projects</div>
-        <div class="stat-value" style="color:var(--accent)">4</div>
-        <div class="stat-sub"><span class="up">+1</span> this week</div>
+        <div class="stat-label">Total Repos</div>
+        <div class="stat-value" style="color:var(--accent)">20</div>
+        <div class="stat-sub">all public</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Open Tasks</div>
-        <div class="stat-value" style="color:var(--yellow)" id="open-count">6</div>
-        <div class="stat-sub">across all projects</div>
+        <div class="stat-label">Active This Month</div>
+        <div class="stat-value" style="color:var(--green)">5</div>
+        <div class="stat-sub">updated in March 2026</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">PRs / Branches</div>
-        <div class="stat-value" style="color:var(--purple)">3</div>
-        <div class="stat-sub"><span class="up">2 open</span>, 1 merged</div>
+        <div class="stat-label">Primary Language</div>
+        <div class="stat-value" style="color:var(--orange);font-size:20px;padding-top:4px">HTML</div>
+        <div class="stat-sub">also JS &amp; CSS</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Commits This Week</div>
-        <div class="stat-value" style="color:var(--green)" id="commit-count">0</div>
-        <div class="stat-sub">on active branches</div>
+        <div class="stat-label">Categories</div>
+        <div class="stat-value" style="color:var(--purple)">4</div>
+        <div class="stat-sub">40k · MESBG · games · tools</div>
       </div>
     </div>
 
-    <!-- Projects + Activity -->
-    <div class="grid-2" style="margin-bottom:20px">
-
-      <!-- Projects -->
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Projects</span>
-          <span class="card-action">+ New</span>
-        </div>
-
-        <div class="project-item">
-          <div class="project-info">
-            <div class="project-icon" style="background:rgba(88,166,255,0.15)">🗂</div>
-            <div>
-              <div class="project-name">claude-code-test</div>
-              <div class="project-desc">Project dashboard · current repo</div>
-            </div>
-          </div>
-          <div class="project-meta">
-            <span class="badge badge-blue">In progress</span>
-          </div>
-        </div>
-
-        <div class="project-item">
-          <div class="project-info">
-            <div class="project-icon" style="background:rgba(63,185,80,0.15)">⚡</div>
-            <div>
-              <div class="project-name">API Integration</div>
-              <div class="project-desc">Claude API · Anthropic SDK</div>
-            </div>
-          </div>
-          <div class="project-meta">
-            <span class="badge badge-green">Active</span>
-          </div>
-        </div>
-
-        <div class="project-item">
-          <div class="project-info">
-            <div class="project-icon" style="background:rgba(188,140,255,0.15)">🛠</div>
-            <div>
-              <div class="project-name">Dev Tooling</div>
-              <div class="project-desc">Hooks · CI · linting setup</div>
-            </div>
-          </div>
-          <div class="project-meta">
-            <span class="badge badge-yellow">Review</span>
-          </div>
-        </div>
-
-        <div class="project-item">
-          <div class="project-info">
-            <div class="project-icon" style="background:rgba(248,81,73,0.15)">📦</div>
-            <div>
-              <div class="project-name">OSS Contributions</div>
-              <div class="project-desc">nicholasbrownworship · GitHub</div>
-            </div>
-          </div>
-          <div class="project-meta">
-            <span class="badge badge-purple">Planned</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Activity -->
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Recent Activity</span>
-          <span class="card-action">View all</span>
-        </div>
-
-        <div class="activity-item">
-          <div class="activity-dot" style="background:var(--accent)"></div>
-          <div>
-            <div class="activity-text"><strong>Branch created</strong> — claude/setup-project-dashboard-v5VcL</div>
-            <div class="activity-time">Just now</div>
-          </div>
-        </div>
-        <div class="activity-item">
-          <div class="activity-dot" style="background:var(--green)"></div>
-          <div>
-            <div class="activity-text"><strong>Initial commit</strong> on master — README added</div>
-            <div class="activity-time">Today</div>
-          </div>
-        </div>
-        <div class="activity-item">
-          <div class="activity-dot" style="background:var(--purple)"></div>
-          <div>
-            <div class="activity-text"><strong>Dashboard session</strong> started with Claude Code</div>
-            <div class="activity-time">Today</div>
-          </div>
-        </div>
-        <div class="activity-item">
-          <div class="activity-dot" style="background:var(--yellow)"></div>
-          <div>
-            <div class="activity-text"><strong>Repo forked</strong> — nicholasbrownworship/claude-code-test</div>
-            <div class="activity-time">This week</div>
-          </div>
-        </div>
-        <div class="activity-item">
-          <div class="activity-dot" style="background:var(--green)"></div>
-          <div>
-            <div class="activity-text"><strong>PR merged</strong> — setup initial project structure</div>
-            <div class="activity-time">This week</div>
-          </div>
-        </div>
+    <!-- Warhammer 40k -->
+    <div id="warhammer" class="section-header">
+      <div class="section-title">
+        ⚔ Warhammer 40,000
+        <span class="tag">5 repos</span>
       </div>
     </div>
+    <div class="project-grid">
 
-    <!-- Tasks + Commits chart -->
-    <div class="grid-3">
+      <a class="project-card" href="https://github.com/nicholasbrownworship/40k-calculator" target="_blank">
+        <div class="project-card-top">
+          <span class="project-emoji">🎲</span>
+          <span class="project-name">40k-calculator</span>
+        </div>
+        <div class="project-desc">Damage calculator for Warhammer 40,000 — crunch the dice math without the headache.</div>
+        <div class="project-foot">
+          <span class="lang-dot lang-html"></span><span class="lang-label">HTML</span>
+          <span class="updated">Updated Mar 19</span>
+        </div>
+      </a>
 
-      <!-- Tasks -->
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Tasks</span>
-          <span class="card-action" onclick="toggleDone()">Toggle done</span>
+      <a class="project-card" href="https://github.com/nicholasbrownworship/the-archivum-periodic" target="_blank">
+        <div class="project-card-top">
+          <span class="project-emoji">📚</span>
+          <span class="project-name">the-archivum-periodic</span>
         </div>
+        <div class="project-desc">A repository of Warhammer stories organized by faction and setting.</div>
+        <div class="project-foot">
+          <span class="lang-dot lang-js"></span><span class="lang-label">JavaScript</span>
+          <span class="updated">Updated Jan 29</span>
+        </div>
+      </a>
 
-        <div class="task-item done" onclick="toggleTask(this)">
-          <div class="task-check">✓</div>
-          <div class="task-label">Create project repo on GitHub</div>
-          <div class="task-tag">setup</div>
+      <a class="project-card" href="https://github.com/nicholasbrownworship/Order-of-Battle" target="_blank">
+        <div class="project-card-top">
+          <span class="project-emoji">📋</span>
+          <span class="project-name">Order-of-Battle</span>
         </div>
-        <div class="task-item done" onclick="toggleTask(this)">
-          <div class="task-check">✓</div>
-          <div class="task-label">Configure Claude Code branch</div>
-          <div class="task-tag">setup</div>
+        <div class="project-desc">40k Crusade Order of Battle tracker — manage your campaign roster.</div>
+        <div class="project-foot">
+          <span class="lang-dot lang-js"></span><span class="lang-label">JavaScript</span>
+          <span class="updated">Updated Jan 23</span>
         </div>
-        <div class="task-item" onclick="toggleTask(this)">
-          <div class="task-check"></div>
-          <div class="task-label">Build project dashboard</div>
-          <div class="task-tag">dashboard</div>
-        </div>
-        <div class="task-item" onclick="toggleTask(this)">
-          <div class="task-check"></div>
-          <div class="task-label">Add Claude API integration</div>
-          <div class="task-tag">api</div>
-        </div>
-        <div class="task-item" onclick="toggleTask(this)">
-          <div class="task-check"></div>
-          <div class="task-label">Set up CI/CD pipeline</div>
-          <div class="task-tag">devops</div>
-        </div>
-        <div class="task-item" onclick="toggleTask(this)">
-          <div class="task-check"></div>
-          <div class="task-label">Write session-start hook</div>
-          <div class="task-tag">tooling</div>
-        </div>
-        <div class="task-item" onclick="toggleTask(this)">
-          <div class="task-check"></div>
-          <div class="task-label">Document project structure</div>
-          <div class="task-tag">docs</div>
-        </div>
-        <div class="task-item" onclick="toggleTask(this)">
-          <div class="task-check"></div>
-          <div class="task-label">Review open PRs</div>
-          <div class="task-tag">github</div>
-        </div>
+      </a>
 
-        <div class="add-task-form">
-          <input class="add-task-input" id="new-task-input" placeholder="Add a task..." onkeydown="addTaskOnEnter(event)" />
-          <button class="add-task-btn" onclick="addTask()">Add</button>
+      <a class="project-card" href="https://github.com/nicholasbrownworship/40k-tournament" target="_blank">
+        <div class="project-card-top">
+          <span class="project-emoji">🏆</span>
+          <span class="project-name">40k-tournament</span>
         </div>
-      </div>
+        <div class="project-desc">Tournament management features for Warhammer 40,000 events.</div>
+        <div class="project-foot">
+          <span class="lang-dot lang-js"></span><span class="lang-label">JavaScript</span>
+          <span class="updated">Updated Jan 22</span>
+        </div>
+      </a>
 
-      <!-- Commit activity -->
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Commit Activity</span>
+      <a class="project-card" href="https://github.com/nicholasbrownworship/fortheemperor" target="_blank">
+        <div class="project-card-top">
+          <span class="project-emoji">👑</span>
+          <span class="project-name">fortheemperor</span>
         </div>
-        <div class="chart-wrap">
-          <div class="bar-chart" id="bar-chart"></div>
+        <div class="project-desc">Just a fun little guy. For the Emperor.</div>
+        <div class="project-foot">
+          <span class="lang-dot lang-js"></span><span class="lang-label">JavaScript</span>
+          <span class="updated">Updated Feb 10</span>
         </div>
-        <div style="padding: 0 20px 16px">
-          <div style="color:var(--muted);font-size:12px;margin-bottom:10px">Branch health</div>
-          <div style="display:flex;flex-direction:column;gap:8px">
-            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
-              <span>claude/setup-project-dashboard</span>
-              <span class="badge badge-blue">active</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
-              <span>master</span>
-              <span class="badge badge-green">clean</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
-              <span>main</span>
-              <span class="badge badge-green">clean</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      </a>
 
     </div>
+
+    <!-- Middle Earth -->
+    <div id="middle-earth" class="section-header">
+      <div class="section-title">
+        🗺 Middle Earth
+        <span class="tag">4 repos</span>
+      </div>
+    </div>
+    <div class="project-grid">
+
+      <a class="project-card" href="https://github.com/nicholasbrownworship/battles-in-middle-earth" target="_blank">
+        <div class="project-card-top">
+          <span class="project-emoji">⚔</span>
+          <span class="project-name">battles-in-middle-earth</span>
+        </div>
+        <div class="project-desc">MESBG Army Builder — build and manage your Middle-earth Strategy Battle Game forces.</div>
+        <div class="project-foot">
+          <span class="lang-dot lang-js"></span><span class="lang-label">JavaScript</span>
+          <span class="updated">Updated Jan 30</span>
+        </div>
+      </a>
+
+      <a class="project-card" href="https://github.com/nicholasbrownworship/ME-Map" target="_blank">
+        <div class="project-card-top">
+          <span class="project-emoji">🗺</span>
+          <span class="project-name">ME-Map</span>
+        </div>
+        <div class="project-desc">Interactive map of Middle Earth for testing battle company gameplay mechanics.</div>
+        <div class="project-foot">
+          <span class="lang-dot lang-js"></span><span class="lang-label">JavaScript</span>
+          <span class="updated">Updated Feb 16</span>
+        </div>
+      </a>
+
+      <a class="project-card" href="https://github.com/nicholasbrownworship/Mordor-Fun-Run" target="_blank">
+        <div class="project-card-top">
+          <span class="project-emoji">🏃</span>
+          <span class="project-name">Mordor-Fun-Run</span>
+        </div>
+        <div class="project-desc">Step tracker mapping a journey through Middle Earth — walk to Mordor.</div>
+        <div class="project-foot">
+          <span class="lang-dot lang-html"></span><span class="lang-label">HTML</span>
+          <span class="updated">Updated Feb 10</span>
+        </div>
+      </a>
+
+      <a class="project-card" href="https://github.com/nicholasbrownworship/Bastior-Sub-Sector" target="_blank">
+        <div class="project-card-top">
+          <span class="project-emoji">🌌</span>
+          <span class="project-name">Bastior-Sub-Sector</span>
+        </div>
+        <div class="project-desc">Sector map and lore repository — a fully Claude-assisted world.</div>
+        <div class="project-foot">
+          <span class="lang-dot lang-html"></span><span class="lang-label">HTML</span>
+          <span class="updated">Updated Mar 6</span>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- Other Games -->
+    <div id="games" class="section-header">
+      <div class="section-title">
+        🎲 Other Games &amp; Stories
+        <span class="tag">3 repos</span>
+      </div>
+    </div>
+    <div class="project-grid">
+
+      <a class="project-card" href="https://github.com/nicholasbrownworship/EmberSquad" target="_blank">
+        <div class="project-card-top">
+          <span class="project-emoji">🔥</span>
+          <span class="project-name">EmberSquad</span>
+        </div>
+        <div class="project-desc">EmberSquad play-test repository — game testing and iteration.</div>
+        <div class="project-foot">
+          <span class="lang-dot lang-html"></span><span class="lang-label">HTML</span>
+          <span class="updated">Updated Mar 16</span>
+        </div>
+      </a>
+
+      <a class="project-card" href="https://github.com/nicholasbrownworship/PilatesPalsCinematicUniverse" target="_blank">
+        <div class="project-card-top">
+          <span class="project-emoji">🎬</span>
+          <span class="project-name">PilatesPalsCinematicUniverse</span>
+        </div>
+        <div class="project-desc">The Pilates Pals Cinematic Universe — expanding the lore.</div>
+        <div class="project-foot">
+          <span class="lang-dot lang-html"></span><span class="lang-label">HTML</span>
+          <span class="updated">Updated Mar 3</span>
+        </div>
+      </a>
+
+      <a class="project-card" href="https://github.com/nicholasbrownworship/choose-your-own-adventure" target="_blank">
+        <div class="project-card-top">
+          <span class="project-emoji">📖</span>
+          <span class="project-name">choose-your-own-adventure</span>
+        </div>
+        <div class="project-desc">Interactive branching narrative — a choose-your-own-adventure engine.</div>
+        <div class="project-foot">
+          <span class="lang-dot lang-html"></span><span class="lang-label">HTML</span>
+          <span class="updated">Updated Jan 13</span>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- Tools & Tests -->
+    <div id="tools" class="section-header">
+      <div class="section-title">
+        🛠 Tools &amp; Experiments
+        <span class="tag">8 repos</span>
+      </div>
+    </div>
+    <div class="project-grid">
+
+      <a class="project-card" href="https://github.com/nicholasbrownworship/the-codex" target="_blank">
+        <div class="project-card-top">
+          <span class="project-emoji">📜</span>
+          <span class="project-name">the-codex</span>
+        </div>
+        <div class="project-desc">Personal Claude codex — notes and reference for working with AI.</div>
+        <div class="project-foot">
+          <span class="lang-dot lang-html"></span><span class="lang-label">HTML</span>
+          <span class="updated">Updated Mar 9</span>
+        </div>
+      </a>
+
+      <a class="project-card" href="https://github.com/nicholasbrownworship/small-caddie" target="_blank">
+        <div class="project-card-top">
+          <span class="project-emoji">⛳</span>
+          <span class="project-name">small-caddie</span>
+        </div>
+        <div class="project-desc">Feature tests for Small Caddie — a golf companion tool.</div>
+        <div class="project-foot">
+          <span class="lang-dot lang-html"></span><span class="lang-label">HTML</span>
+          <span class="updated">Updated Jan 8</span>
+        </div>
+      </a>
+
+      <a class="project-card" href="https://github.com/nicholasbrownworship/crypto-test" target="_blank">
+        <div class="project-card-top">
+          <span class="project-emoji">🔐</span>
+          <span class="project-name">crypto-test</span>
+        </div>
+        <div class="project-desc">Learning cryptography — experimenting with encryption concepts.</div>
+        <div class="project-foot">
+          <span class="lang-dot lang-html"></span><span class="lang-label">HTML</span>
+          <span class="updated">Updated Feb 26</span>
+        </div>
+      </a>
+
+      <a class="project-card" href="https://github.com/nicholasbrownworship/overlay-system" target="_blank">
+        <div class="project-card-top">
+          <span class="project-emoji">🖥</span>
+          <span class="project-name">overlay-system</span>
+        </div>
+        <div class="project-desc">Overlay system test — building UI overlays and HUD elements.</div>
+        <div class="project-foot">
+          <span class="lang-dot lang-html"></span><span class="lang-label">HTML</span>
+          <span class="updated">Updated Jan 9</span>
+        </div>
+      </a>
+
+      <a class="project-card" href="https://github.com/nicholasbrownworship/Claude-site" target="_blank">
+        <div class="project-card-top">
+          <span class="project-emoji">🤖</span>
+          <span class="project-name">Claude-site</span>
+        </div>
+        <div class="project-desc">Test site built with Claude — CSS-heavy layout experiments.</div>
+        <div class="project-foot">
+          <span class="lang-dot lang-css"></span><span class="lang-label">CSS</span>
+          <span class="updated">Updated Feb 27</span>
+        </div>
+      </a>
+
+      <a class="project-card" href="https://github.com/nicholasbrownworship/New-Test-Golf-Thing-" target="_blank">
+        <div class="project-card-top">
+          <span class="project-emoji">🏌</span>
+          <span class="project-name">New-Test-Golf-Thing</span>
+        </div>
+        <div class="project-desc">Figuring out new golf features — experimental playground.</div>
+        <div class="project-foot">
+          <span class="lang-dot lang-html"></span><span class="lang-label">HTML</span>
+          <span class="updated">Updated Jan 12</span>
+        </div>
+      </a>
+
+      <a class="project-card" href="https://github.com/nicholasbrownworship/PPCU" target="_blank">
+        <div class="project-card-top">
+          <span class="project-emoji">🧪</span>
+          <span class="project-name">PPCU</span>
+        </div>
+        <div class="project-desc">Test repository — experimentation and prototyping.</div>
+        <div class="project-foot">
+          <span class="lang-dot lang-html"></span><span class="lang-label">HTML</span>
+          <span class="updated">Updated Mar 4</span>
+        </div>
+      </a>
+
+      <a class="project-card" href="https://github.com/nicholasbrownworship/claude-code-test" target="_blank">
+        <div class="project-card-top">
+          <span class="project-emoji">💻</span>
+          <span class="project-name">claude-code-test</span>
+        </div>
+        <div class="project-desc">This dashboard — Claude Code development and testing ground.</div>
+        <div class="project-foot">
+          <span class="lang-dot lang-none"></span><span class="lang-label">HTML</span>
+          <span class="updated">Updated Mar 20</span>
+        </div>
+      </a>
+
+    </div>
+
   </main>
 </div>
 
 <script>
-  // Date display
-  const d = new Date();
-  document.getElementById('date-display').textContent =
-    d.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  // Highlight active sidebar section on scroll
+  const sections = document.querySelectorAll('[id]');
+  const navItems = document.querySelectorAll('.nav-item[href^="#"]');
 
-  // Nav active state
-  function setActive(el) {
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    el.classList.add('active');
-  }
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navItems.forEach(n => n.classList.remove('active'));
+        const match = document.querySelector(`.nav-item[href="#${entry.target.id}"]`);
+        if (match) match.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
 
-  // Task toggle
-  function toggleTask(el) {
-    el.classList.toggle('done');
-    el.querySelector('.task-check').textContent = el.classList.contains('done') ? '✓' : '';
-    updateOpenCount();
-  }
-
-  function updateOpenCount() {
-    const open = document.querySelectorAll('.task-item:not(.done)').length;
-    document.getElementById('open-count').textContent = open;
-  }
-
-  function toggleDone() {
-    const dones = document.querySelectorAll('.task-item.done');
-    dones.forEach(el => el.style.display = el.style.display === 'none' ? '' : 'none');
-  }
-
-  // Add task
-  function addTask() {
-    const input = document.getElementById('new-task-input');
-    const val = input.value.trim();
-    if (!val) return;
-
-    const form = document.querySelector('.add-task-form');
-    const item = document.createElement('div');
-    item.className = 'task-item';
-    item.onclick = () => toggleTask(item);
-    item.innerHTML = `<div class="task-check"></div><div class="task-label">${val}</div><div class="task-tag">new</div>`;
-    form.parentNode.insertBefore(item, form);
-    input.value = '';
-    updateOpenCount();
-  }
-
-  function addTaskOnEnter(e) { if (e.key === 'Enter') addTask(); }
-
-  // Bar chart — last 7 days fake data seeded from today
-  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const today = new Date().getDay();
-  const data = [2, 5, 3, 7, 4, 1, 6];
-  const chart = document.getElementById('bar-chart');
-  const max = Math.max(...data);
-
-  for (let i = 0; i < 7; i++) {
-    const dayIdx = (today - 6 + i + 7) % 7;
-    const col = document.createElement('div');
-    col.className = 'bar-col';
-    const pct = Math.round((data[i] / max) * 100);
-    const isToday = i === 6;
-    col.innerHTML = `
-      <div class="bar${isToday ? ' today' : ''}" style="height:${pct}%" title="${data[i]} commits"></div>
-      <div class="bar-label">${days[dayIdx]}</div>`;
-    chart.appendChild(col);
-  }
-
-  // Commit count = today's value
-  document.getElementById('commit-count').textContent = data[6];
-
-  updateOpenCount();
+  sections.forEach(s => observer.observe(s));
 </script>
 </body>
 </html>
